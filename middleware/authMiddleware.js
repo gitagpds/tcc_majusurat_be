@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "../config/secret.js";
 
 export const verifyToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -12,7 +13,7 @@ export const verifyToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
     req.user = decoded; // Simpan semua payload JWT ke req.user
     next();
   } catch (error) {
