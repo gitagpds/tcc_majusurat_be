@@ -17,10 +17,13 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: true, // <- Izinkan semua origin yang masuk (tanpa filter)
+    origin: ["https://majusurat-fe-dot-a-06-new.uc.r.appspot.com"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 app.use(express.json());
 
