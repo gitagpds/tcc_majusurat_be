@@ -52,20 +52,18 @@ async function getPengajuanSuratById(req, res) {
 // CREATE PENGAJUAN SURAT
 async function createPengajuanSurat(req, res) {
   try {
+    console.log("🧪 req.body:", req.body);
+    console.log("🧪 req.file:", req.file);
+
     const {
       id_user,
       keperluan_surat,
       instansi_tujuan,
       tanggal_berangkat,
       tanggal_kembali,
-      dokumen_pendukung,
     } = req.body;
 
-    if (!id_user || !keperluan_surat || !instansi_tujuan || !tanggal_berangkat || !tanggal_kembali) {
-      const error = new Error("Field wajib tidak boleh kosong");
-      error.statusCode = 400;
-      throw error;
-    }
+    const dokumen_pendukung = req.file?.filename || null;
 
     const newPengajuan = await PengajuanSurat.create({
       id_user,
@@ -83,6 +81,7 @@ async function createPengajuanSurat(req, res) {
       data: newPengajuan,
     });
   } catch (error) {
+    console.error("❌ SERVER ERROR:", error);
     return res.status(error.statusCode || 500).json({
       status: "Error",
       message: error.message,
