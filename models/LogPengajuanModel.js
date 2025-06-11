@@ -1,25 +1,42 @@
-import pgDb from "../config/postgresql.js";
+import { Sequelize } from "sequelize";
+import db from "../config/Database.js";
 
-export const getAllLogPengajuan = async () => {
-  const result = await pgDb.query("SELECT * FROM log_pengajuan ORDER BY waktu_aksi DESC");
-  return result.rows;
-};
+const LogPengajuan = db.define(
+  "log_pengajuan",
+  {
+    id_log: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    id_pengajuan: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    id_user: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    aksi_admin: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    alasan: {
+      type: Sequelize.TEXT,
+      allowNull: true,
+    },
+    waktu_aksi: {
+      type: Sequelize.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.NOW,
+    },
+  },
+  {
+    timestamps: false, // karena kita pakai waktu_aksi manual, bukan createdAt/updatedAt
+    freezeTableName: true,
+  }
+);
 
-export const getLogPengajuanById = async (id) => {
-  const result = await pgDb.query("SELECT * FROM log_pengajuan WHERE id_log = $1", [id]);
-  return result.rows[0];
-};
+db.sync().then(() => console.log("Database synced"));
 
-export const createLogPengajuan = async ({ id_pengajuan, id_user, aksi_admin, alasan }) => {
-  const result = await pgDb.query(
-    `INSERT INTO log_pengajuan (id_pengajuan, id_user, aksi_admin, alasan, waktu_aksi)
-     VALUES ($1, $2, $3, $4, NOW()) RETURNING *`,
-    [id_pengajuan, id_user, aksi_admin, alasan]
-  );
-  return result.rows[0];
-};
-
-export const deleteLogPengajuan = async (id) => {
-  const result = await pgDb.query("DELETE FROM log_pengajuan WHERE id_log = $1 RETURNING *", [id]);
-  return result.rows[0];
-};
+export default LogPengajuan;

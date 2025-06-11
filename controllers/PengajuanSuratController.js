@@ -1,4 +1,4 @@
-import * as PengajuanSurat from "../models/PengajuanSuratModel.js";
+import PengajuanSurat from "../models/PengajuanSuratModel.js";
 import User from "../models/UserModel.js";
 
 // GET ALL PENGAJUAN SURAT
@@ -31,9 +31,7 @@ async function getPengajuanSuratById(req, res) {
     });
 
     if (!pengajuan) {
-      const error = new Error("Pengajuan Surat Not Found");
-      error.statusCode = 400;
-      throw error;
+      throw new Error("Pengajuan Surat Not Found");
     }
 
     return res.status(200).json({
@@ -42,7 +40,7 @@ async function getPengajuanSuratById(req, res) {
       data: pengajuan,
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
+    return res.status(400).json({
       status: "Error",
       message: error.message,
     });
@@ -52,9 +50,6 @@ async function getPengajuanSuratById(req, res) {
 // CREATE PENGAJUAN SURAT
 async function createPengajuanSurat(req, res) {
   try {
-    console.log("🧪 req.body:", req.body);
-    console.log("🧪 req.file:", req.file);
-
     const {
       id_user,
       keperluan_surat,
@@ -65,7 +60,7 @@ async function createPengajuanSurat(req, res) {
 
     const dokumen_pendukung = req.file?.filename || null;
 
-    const newPengajuan = await PengajuanSurat.createPengajuan({
+    const newPengajuan = await PengajuanSurat.create({
       id_user,
       keperluan_surat,
       instansi_tujuan,
@@ -81,7 +76,6 @@ async function createPengajuanSurat(req, res) {
       data: newPengajuan,
     });
   } catch (error) {
-    console.error("❌ SERVER ERROR:", error);
     return res.status(error.statusCode || 500).json({
       status: "Error",
       message: error.message,
@@ -97,17 +91,15 @@ async function updatePengajuanSurat(req, res) {
     const pengajuan = await PengajuanSurat.findOne({ where: { id_pengajuan: id } });
 
     if (!pengajuan) {
-      const error = new Error("Pengajuan Surat Not Found");
-      error.statusCode = 400;
-      throw error;
+      throw new Error("Pengajuan Surat Not Found");
     }
 
-    const result = await PengajuanSurat.update(req.body, { where: { id_pengajuan: id } });
+    const result = await PengajuanSurat.update(req.body, {
+      where: { id_pengajuan: id },
+    });
 
     if (result[0] === 0) {
-      const error = new Error("No Data Changed");
-      error.statusCode = 400;
-      throw error;
+      throw new Error("No Data Changed");
     }
 
     return res.status(200).json({
@@ -115,7 +107,7 @@ async function updatePengajuanSurat(req, res) {
       message: "Pengajuan Surat Updated",
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
+    return res.status(400).json({
       status: "Error",
       message: error.message,
     });
@@ -130,17 +122,13 @@ async function deletePengajuanSurat(req, res) {
     const pengajuan = await PengajuanSurat.findOne({ where: { id_pengajuan: id } });
 
     if (!pengajuan) {
-      const error = new Error("Pengajuan Surat Not Found");
-      error.statusCode = 400;
-      throw error;
+      throw new Error("Pengajuan Surat Not Found");
     }
 
     const result = await PengajuanSurat.destroy({ where: { id_pengajuan: id } });
 
     if (result === 0) {
-      const error = new Error("No Data Changed");
-      error.statusCode = 400;
-      throw error;
+      throw new Error("No Data Changed");
     }
 
     return res.status(200).json({
@@ -148,7 +136,7 @@ async function deletePengajuanSurat(req, res) {
       message: "Pengajuan Surat Deleted",
     });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
+    return res.status(400).json({
       status: "Error",
       message: error.message,
     });
