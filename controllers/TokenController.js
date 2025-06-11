@@ -1,5 +1,6 @@
 import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "../config/secret.js";
 
 export const getAccessToken = async (req, res) => {
   try {
@@ -23,7 +24,7 @@ export const getAccessToken = async (req, res) => {
 
     jwt.verify(
       refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
+      REFRESH_TOKEN_SECRET,
       (error, decoded) => {
         if (error) {
           return res.status(403).json({
@@ -39,7 +40,7 @@ export const getAccessToken = async (req, res) => {
             role: user.role,         // ✅ disarankan untuk hak akses
             email: user.email        // opsional, kalau mau kirim juga
           },
-          process.env.ACCESS_TOKEN_SECRET,
+          ACCESS_TOKEN_SECRET,
           { expiresIn: "30s" }
         );
 
