@@ -15,28 +15,40 @@ dotenv.config();
 const app = express();
 app.use(cookieParser());
 
-// Daftar origin yang diizinkan
+// ✅ Daftar origin yang diizinkan
 const allowedOrigins = [
   "http://localhost:3000",
   "https://majusurat-fe-dot-a-06-new.uc.r.appspot.com",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+// ✅ CORS Middleware — HARUS sebelum routes
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 
+// ✅ Menangani preflight (OPTIONS)
+app.options('*', cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
+
+// Middleware JSON
 app.use(express.json());
 
-// Tes koneksi database
+// ✅ Tes koneksi database
 (async () => {
   try {
     await db.authenticate();
@@ -46,7 +58,7 @@ app.use(express.json());
   }
 })();
 
-// Routes
+// ✅ Gunakan routes
 app.use(userRoute);
 app.use(pengajuanSuratRoute);
 app.use(logPengajuanRoute);
@@ -56,7 +68,7 @@ app.get("/", (req, res) => {
   res.send("🔥 Server berjalan dengan baik.");
 });
 
-// 404 handler
+// ✅ 404 fallback
 app.use((req, res) => {
   res.status(404).json({ status: "Error", message: "Route tidak ditemukan" });
 });
