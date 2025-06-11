@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 // Import database config
 import db from "./config/mysql.js"; // MySQL (Sequelize)
@@ -14,10 +15,23 @@ import logPengajuanRoute from "./routes/LogPengajuanRoute.js";
 dotenv.config();
 
 const app = express();
+app.use(cookieParser());
+
+// Daftar origin yang diizinkan
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://majusurat-fe-dot-a-06-new.uc.r.appspot.com",
+];
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"], // GANTI KE  origin: ["http://localhost:3000", "http://[FRONTEND]"], JIKA SUDAH ADA FRONTEND
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
