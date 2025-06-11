@@ -31,13 +31,17 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => res.render("index"));
 app.use(express.json());
 
 // Routes
 app.use(userRoute);
 app.use(pengajuanSuratRoute);
 app.use(logPengajuanRoute);
+
+// Default Route
+app.get("/", (req, res) => {
+  res.send("🔥 Server berjalan dengan baik.");
+});
 
 // Jalankan server
 const PORT = process.env.PORT || 5000;
