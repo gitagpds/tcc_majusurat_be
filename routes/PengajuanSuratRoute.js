@@ -11,19 +11,19 @@ import upload from "../middleware/upload.js";
 
 const router = express.Router();
 
-// GET all pengajuan surat (butuh autentikasi)
+// ✅ POST pengajuan surat (dengan upload file)
 router.post("/pengajuan-surat", verifyToken, upload.single("dokumen_pendukung"), createPengajuanSurat);
 
-// GET pengajuan surat by ID (butuh autentikasi)
+// GET all pengajuan surat
+router.get("/pengajuan-surat", verifyToken, getPengajuanSurat);
+
+// GET pengajuan surat by ID
 router.get("/pengajuan-surat/:id", verifyToken, getPengajuanSuratById);
 
-// POST create pengajuan surat (bisa tanpa token kalau perlu, tapi biasanya pakai token)
-router.post("/pengajuan-surat", verifyToken, createPengajuanSurat);
-
-// PUT update pengajuan surat by ID (butuh autentikasi)
+// PUT update pengajuan surat
 router.put("/pengajuan-surat/:id", verifyToken, updatePengajuanSurat);
 
-// DELETE pengajuan surat by ID (butuh autentikasi)
+// DELETE pengajuan surat
 router.delete("/pengajuan-surat/:id", verifyToken, deletePengajuanSurat);
 
 export default router;
