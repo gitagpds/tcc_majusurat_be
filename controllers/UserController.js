@@ -1,6 +1,7 @@
 import User from "../models/UserModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "../config/secret.js";
 
 // GET USERS
 async function getUsers(req, res) {
@@ -170,13 +171,13 @@ async function login(req, res) {
 
     const accessToken = jwt.sign(
       safeUserData,
-      process.env.ACCESS_TOKEN_SECRET,
+      ACCESS_TOKEN_SECRET,
       { expiresIn: "30s" }
     );
 
     const refreshToken = jwt.sign(
       safeUserData,
-      process.env.REFRESH_TOKEN_SECRET,
+      REFRESH_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
 
