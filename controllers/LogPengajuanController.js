@@ -5,19 +5,18 @@ import PengajuanSurat from "../models/PengajuanSuratModel.js";
 // GET ALL
 export const getLogPengajuans = async (req, res) => {
   try {
-    const logs = await LogPengajuan.findAll({
-      include: [
-        { model: User, attributes: ["id_user", "name", "email"] },
-        { model: PengajuanSurat, attributes: ["id_pengajuan", "keperluan_surat", "status"] }
-      ],
-      order: [["createdAt", "DESC"]],
+    const logs = await LogPengajuan.findAll(); // tanpa include
+
+    res.status(200).json({
+      status: "Success",
+      data: logs,
     });
-
-    res.status(200).json({ status: "Success", data: logs });
-
   } catch (error) {
-    console.error("❌ ERROR GET LOG PENGAJUAN:", error); // Tambahkan ini untuk log di Cloud Run
-    res.status(500).json({ status: "Error", message: error.message });
+    console.error("ERROR GET LOG PENGAJUAN:", error);
+    res.status(500).json({
+      status: "Error",
+      message: error.message,
+    });
   }
 };
 
