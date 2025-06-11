@@ -7,11 +7,12 @@ import {
   deletePengajuanSurat,
 } from "../controllers/PengajuanSuratController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
+import upload from "../middleware/upload.js";
 
 const router = express.Router();
 
 // GET all pengajuan surat (butuh autentikasi)
-router.get("/pengajuan-surat", verifyToken, getPengajuanSurat);
+router.post("/pengajuan-surat", verifyToken, upload.single("dokumen_pendukung"), createPengajuanSurat);
 
 // GET pengajuan surat by ID (butuh autentikasi)
 router.get("/pengajuan-surat/:id", verifyToken, getPengajuanSuratById);
