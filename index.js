@@ -15,15 +15,24 @@ dotenv.config();
 const app = express();
 app.use(cookieParser());
 
+// Daftar origin yang diizinkan
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://majusurat-fe-dot-a-06-new.uc.r.appspot.com",
+];
+
 app.use(
   cors({
-    origin: ["https://majusurat-fe-dot-a-06-new.uc.r.appspot.com"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
 
 app.use(express.json());
 
