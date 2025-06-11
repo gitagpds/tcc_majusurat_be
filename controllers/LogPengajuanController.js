@@ -7,27 +7,17 @@ export const getLogPengajuans = async (req, res) => {
   try {
     const logs = await LogPengajuan.findAll({
       include: [
-        {
-          model: User,
-          attributes: ["id_user", "name", "email"],
-        },
-        {
-          model: PengajuanSurat,
-          attributes: ["id_pengajuan", "keperluan_surat", "status"],
-        },
+        { model: User, attributes: ["id_user", "name", "email"] },
+        { model: PengajuanSurat, attributes: ["id_pengajuan", "keperluan_surat", "status"] }
       ],
       order: [["createdAt", "DESC"]],
     });
 
-    res.status(200).json({
-      status: "Success",
-      data: logs,
-    });
+    res.status(200).json({ status: "Success", data: logs });
+
   } catch (error) {
-    res.status(500).json({
-      status: "Error",
-      message: error.message,
-    });
+    console.error("❌ ERROR GET LOG PENGAJUAN:", error); // Tambahkan ini untuk log di Cloud Run
+    res.status(500).json({ status: "Error", message: error.message });
   }
 };
 
