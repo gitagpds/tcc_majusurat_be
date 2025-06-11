@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
+import "dotenv/config";
 import "./models/relation.js";
 import db from "./config/Database.js";
 
@@ -10,63 +10,39 @@ import userRoute from "./routes/UserRoute.js";
 import pengajuanSuratRoute from "./routes/PengajuanSuratRoute.js";
 import logPengajuanRoute from "./routes/LogPengajuanRoute.js";
 
-dotenv.config();
-
 const app = express();
 app.use(cookieParser());
 
-// ✅ Daftar origin yang diizinkan
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://localhost:8080",
   "https://majusurat-fe-dot-a-06-new.uc.r.appspot.com",
 ];
 
-// ✅ CORS Middleware — HARUS sebelum routes
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-// ✅ Menangani preflight (OPTIONS)
-app.options('*', cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
-
-// Middleware JSON
-app.use(express.json());
-
-// ✅ Tes koneksi database
-(async () => {
-  try {
-    await db.authenticate();
-    console.log("✅ Koneksi ke MySQL berhasil.");
-  } catch (error) {
-    console.error("❌ Gagal koneksi ke database:", error.message);
-  }
-})();
-
-// ✅ Gunakan routes
-app.use(userRoute);
-app.use(pengajuanSuratRoute);
-app.use(logPengajuanRoute);
 
 // Default route
 app.get("/", (req, res) => {
   res.send("🔥 Server berjalan dengan baik.");
 });
+
+app.use(express.json());
+
+app.use(userRoute);
+app.use(pengajuanSuratRoute);
+app.use(logPengajuanRoute);
 
 // ✅ 404 fallback
 app.use((req, res) => {
@@ -74,7 +50,7 @@ app.use((req, res) => {
 });
 
 // Jalankan server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
 });
