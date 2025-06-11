@@ -11,40 +11,45 @@ import pengajuanSuratRoute from "./routes/PengajuanSuratRoute.js";
 import logPengajuanRoute from "./routes/LogPengajuanRoute.js";
 
 const app = express();
-app.use(cookieParser());
 
+// Middleware awal
+app.use(cookieParser());
+app.use(express.json());
+
+// CORS setup
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:8080",
   "https://majusurat-fe-dot-a-06-new.uc.r.appspot.com",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
 
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options("*", cors(corsOptions));
 
 // Default route
 app.get("/", (req, res) => {
   res.send("🔥 Server berjalan dengan baik.");
 });
 
-app.use(express.json());
-
+// Routes
 app.use(userRoute);
 app.use(pengajuanSuratRoute);
 app.use(logPengajuanRoute);
 
-// ✅ 404 fallback
+// 404 fallback
 app.use((req, res) => {
   res.status(404).json({ status: "Error", message: "Route tidak ditemukan" });
 });
