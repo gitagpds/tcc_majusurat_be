@@ -1,17 +1,10 @@
 steps:
-  # 1. Salin file .env dari Cloud Storage ke direktori kerja Cloud Build Pakai Gsuri
-  - name: "gcr.io/cloud-builders/gsutil"
-    args: ["cp", "gs://env-project-majusurat/.env", ".env"]
-
-  # 2. Build Docker image backend dengan tag yang sesuai project dan service
   - name: "gcr.io/cloud-builders/docker"
     args: ["build", "-t", "gcr.io/$PROJECT_ID/project-majusurat-be", "."]
 
-  # 3. Push Docker image ke Container Registry / Artifact Registry
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/project-majusurat-be"]
 
-  # 4. Deploy ke Cloud Run, set environment variables dari substitution variables
   - name: "gcr.io/cloud-builders/gcloud"
     entrypoint: gcloud
     args:
