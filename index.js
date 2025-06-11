@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import "dotenv/config";
+import dotenv from "dotenv";
 import "./models/relation.js";
 import db from "./config/Database.js";
 
@@ -10,52 +10,59 @@ import userRoute from "./routes/UserRoute.js";
 import pengajuanSuratRoute from "./routes/PengajuanSuratRoute.js";
 import logPengajuanRoute from "./routes/LogPengajuanRoute.js";
 
+dotenv.config();
+
 const app = express();
-
-// Middleware awal
 app.use(cookieParser());
-app.use(express.json());
 
-// CORS setup
+// Daftar origin yang diizinkan
 const allowedOrigins = [
   "http://localhost:3000",
-  "http://localhost:8080",
   "https://majusurat-fe-dot-a-06-new.uc.r.appspot.com",
 ];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-};
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-app.use(cors(corsOptions));
+app.use(express.json());
 
-// Handle preflight requests
-app.options("*", cors(corsOptions));
-
-// Default route
-app.get("/", (req, res) => {
-  res.send("🔥 Server berjalan dengan baik.");
-});
+// Tes koneksi database
+(async () => {
+  try {
+    await db.authenticate();
+    console.log("✅ Koneksi ke MySQL berhasil.");
+  } catch (error) {
+    console.error("❌ Gagal koneksi ke database:", error.message);
+  }
+})();
 
 // Routes
 app.use(userRoute);
 app.use(pengajuanSuratRoute);
 app.use(logPengajuanRoute);
 
-// 404 fallback
+// Default route
+app.get("/", (req, res) => {
+  res.send("🔥 Server berjalan dengan baik.");
+});
+
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ status: "Error", message: "Route tidak ditemukan" });
 });
 
 // Jalankan server
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
