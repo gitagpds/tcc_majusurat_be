@@ -65,7 +65,7 @@ async function createPengajuanSurat(req, res) {
 
     const dokumen_pendukung = req.file?.filename || null;
 
-    const newPengajuan = await PengajuanSurat.create({
+    const newPengajuan = await PengajuanSurat.createPengajuan({
       id_user,
       keperluan_surat,
       instansi_tujuan,
